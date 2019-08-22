@@ -1,0 +1,42 @@
+# General configuration for the init.d scripts,
+# not necessarily for JBoss EAP itself.
+# default location: /etc/default/jboss-eap
+
+## Location of JDK
+# JAVA_HOME="/usr/lib/jvm/default-java"
+
+## Location of JBoss EAP
+JBOSS_HOME="{{ jboss_home }}/{{ jboss_instance_name }}"
+
+## The username who should own the process.
+JBOSS_USER={{ jboss_user }}
+
+## The mode JBoss EAP should start, standalone or domain
+JBOSS_MODE={{ jboss_mode }}
+
+## Configuration for standalone mode
+JBOSS_CONFIG={{ jboss_conf }}
+
+## JBoss Name
+JBOSS_NAME={{ jboss_instance_name }}
+
+## Configuration for domain mode
+# JBOSS_DOMAIN_CONFIG=domain.xml
+# JBOSS_HOST_CONFIG=host-master.xml
+
+## The amount of time to wait for startup
+# STARTUP_WAIT=60
+
+## The amount of time to wait for shutdown
+# SHUTDOWN_WAIT=60
+
+## Location to keep the console log
+JBOSS_CONSOLE_LOG="{{ jboss_home }}/{{ jboss_instance_name }}/console.log"
+
+## Additionals args to include in startup
+# JBOSS_OPTS="--admin-only -b 127.0.0.1"
+JBOSS_OPTS="-Djboss.socket.binding.port-offset={{ jboss_socket_binding_port_offset }}"
+#JAVA_OPTS="-Xms2048m -Xmx2048m -XX:MaxMetaspaceSize=512m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true"
+
+JAVA_OPTS="{{ jboss_eap_java_opts }}"
+export JAVA_OPTS

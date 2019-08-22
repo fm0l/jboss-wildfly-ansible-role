@@ -1,0 +1,87 @@
+- name: Start wildfly if not started
+  service:
+    name: "{{ jboss_instance_name }}"
+    state: started
+
+- name: Copy the mgmt.user file (default jbossadm:jbossadm)
+  copy:
+    src: ./templates/mgmt-users.properties
+    dest: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_user }}"
+    mode: 0600
+
+- name: "Copy the original xml to the latest-{{ jboss_conf }} to be edited"
+  copy:
+    src: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/original-{{ jboss_conf }}"
+    dest: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/latest-{{ jboss_conf }}"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_user }}"
+    remote_src: yes
+  changed_when: False
+
+- name: "Script Batch dir cleanup {{ jboss_tmp }}"
+  file:
+    state: absent
+    path: "{{ jboss_tmp }}/scripts/"
+
+- name: Batch Scripts copy 
+  template:
+    path: "{{ item }}"
+    dest: "{{ jboss_tmp }}/{{jboss_instance_name}}/scripts/"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_user }}"
+    mode: 0755
+  with_fileglob:
+    - "./{{ jboss_instance_name }}/*.sh"
+
+- name: Variable scripts
+  find:
+    paths: "{{ jboss_tmp }}/{{jboss_instance_name}}/scripts/"
+    patterns: "*.sh"
+  register: scripts
+
+- name: Apply Scripts
+  become: yes
+  become_user: "{{ jboss_user }}"
+  shell: "{{ item.path }}"
+  changed_when: "'The batch executed successfully' in output.stdout"
+  with_items: "{{ scripts.files | sort(attribute='path') }}"
+  register: output
+  failed_when: "'The batch failed' in output.stdout"
+
+- name: "Checksum latest-{{ jboss_conf }}"
+  stat:
+    path: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/latest-{{ jboss_conf }}"
+    get_checksum: yes
+  register: jboss_checksum_latest_standalone_configuration
+
+- name: "Checksum {{ jboss_conf }}"
+  stat:
+    path: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/{{ jboss_conf }}"
+    get_checksum: yes
+  register: jboss_checksum_running_standalone_configuration
+
+- name: "Substitution : {{ jboss_conf }} with latest-{{ jboss_conf }}"
+  copy:
+    src: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/latest-{{ jboss_conf }}"
+    dest: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/{{ jboss_conf }}"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_user }}"
+    remote_src: yes
+  when:
+    - jboss_checksum_latest_standalone_configuration.stat.checksum != jboss_checksum_running_standalone_configuration.stat.checksum
+
+- name: "Stop JBoss if latest-{{ jboss_conf }} and {{ jboss_conf }} are different"
+  service:
+    name: "{{ jboss_instance_name }}"
+    state: stopped
+  when:
+    - jboss_checksum_latest_standalone_configuration.stat.checksum != jboss_checksum_running_standalone_configuration.stat.checksum
+
+- name: "Start JBoss if latest-{{ jboss_conf }} and {{ jboss_conf }} are different"
+  service:
+    name: "{{ jboss_instance_name }}"
+    state: started
+  when:
+    - jboss_checksum_latest_standalone_configuration.stat.checksum != jboss_checksum_running_standalone_configuration.stat.checksum

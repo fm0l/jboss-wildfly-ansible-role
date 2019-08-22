@@ -1,0 +1,21 @@
+- name: Disable jboss.service unit
+  service:
+    daemon_reexec: yes
+    name: "{{ jboss_instance_name }}"
+    state: stopped
+    enabled: false
+
+- name: Remove service script
+  file:
+    state: absent
+    path: "/etc/init.d/{{ jboss_instance_name }}"
+
+- name: Remove service conf
+  file:
+    state: absent
+    path: "/etc/default/{{ jboss_instance_name }}.conf"
+
+- name: Remove Instance Dir
+  file:
+    state: absent
+    path: "{{ jboss_home }}/{{ jboss_instance_name }}"

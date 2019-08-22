@@ -1,0 +1,73 @@
+---
+- name: Install prerequisites
+  yum:
+    name: ['java-1.8.0-openjdk', 'unzip', 'rsync']
+    state: present
+
+- name: Change JVM random source (useful for VMs)
+  replace:
+    dest: /usr/lib/jvm/jre-1.8.0/lib/security/java.security
+    regexp: '^securerandom.source=file:/dev/random'
+    replace: 'securerandom.source=file:/dev/urandom'
+    backup: yes
+
+- name: "Download JBoss"
+  get_url:
+    url: "{{ content_url }}/{{jboss_bin}}-{{ jboss_version }}.zip"
+    dest: "{{ jboss_tmp }}/{{jboss_bin}}-{{ jboss_version }}.zip"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_group }}"
+    mode: 0644
+    validate_certs: no
+
+- name: Unarchive Jboss zip
+  unarchive:
+    src: "{{ jboss_tmp }}/{{jboss_bin}}-{{ jboss_version }}.zip"
+    remote_src: yes
+    dest: "{{ jboss_home }}"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_group }}"
+    mode: 0755
+
+- name: Stat Installation DIR
+  stat:
+    path: "{{ jboss_home }}/{{ jboss_instance_name }}/bin/standalone.sh"
+  register: install_dir_stat
+
+- name: "Single installation dir"
+  synchronize:
+    src: "{{ jboss_home }}/{{jboss_bin}}-{{ jboss_version | regex_replace('^(.*).[0-9]$', '\\1' ) }}/"
+    dest: "{{ jboss_home }}/{{ jboss_instance_name }}"
+  delegate_to: "{{ inventory_hostname }}"
+  when: "'install_dir_stat.stat.isdir is not defined"
+
+- name: Ensure temp folder exits
+  file:
+    path: "{{ jboss_tmp }}"
+    state: directory
+
+- name: Fix permission
+  file: 
+    path: "{{ jboss_home }}"
+    recurse: yes
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_group }}"
+
+- name: "Backup {{ jboss_conf }}"
+  copy:
+    src: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/{{ jboss_conf }}"
+    dest: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/original-{{ jboss_conf }}"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_user }}"
+    remote_src: yes
+
+- name: Create needed folders
+  file:
+    path: "{{ jboss_home }}/{{ jboss_instance_name }}/{{ item.0 }}/{{ item.1 }}"
+    state: directory
+    mode: 0755 
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_group }}"
+  with_nested:
+  - ['standalone']
+  - ['data', 'log', 'configuration/{{ jboss_mode }}_xml_history']

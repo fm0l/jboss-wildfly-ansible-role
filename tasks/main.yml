@@ -1,0 +1,30 @@
+---
+## Install Tasks
+
+# OS Configuration
+- import_tasks: os-config.yml
+  when: rollback_var == "False"
+
+# Binary Installation
+- import_tasks: install-jboss.yml
+  when: rollback_var == "False"
+
+# Service Installation (init.d)
+- import_tasks: service.yml
+  when: rollback_var == "False"
+
+# OJDBC Dirs TODO: Abstract this for any module
+- import_tasks: ojdbc.yml
+  when: rollback_var == "False"
+
+## Config Tasks
+- import_tasks: config.yml
+  when:  rollback_var == "False" and jboss_configurate == "True"
+
+## Cleanup Tasks
+- import_tasks: clean.yml
+  when: rollback_var == "False"
+
+## Rollback Tasks
+- import_tasks: rollback.yml
+  when: rollback_var == "True"

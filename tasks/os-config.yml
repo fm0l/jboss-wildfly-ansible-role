@@ -1,0 +1,54 @@
+---
+- name: Create jboss group
+  group:
+    name: "{{jboss_group}}"
+    gid: "{{jboss_gid}}"
+    state: "present"
+
+- name: Create jboss user
+  user:
+    name: "{{jboss_user}}"
+    uid: "{{jboss_uid}}"
+    group: "{{jboss_group}}"
+    shell: /bin/bash
+    comment: "(APPL-SD)Jboss User"
+    home: "/home/{{jboss_user}}"
+    state: present
+
+- name: hard nofile limits for  "{{ jboss_user }}"
+  pam_limits:
+    domain: "{{ jboss_user }}"
+    limit_type: hard
+    limit_item: nofile
+    value: "{{ jboss_os_hard_nofile }}"
+
+- name: soft nofile limits for "{{ jboss_user }}"
+  pam_limits:
+    domain: "{{ jboss_user }}"
+    limit_type: soft
+    limit_item: nofile
+    value: "{{ jboss_os_soft_nofile }}"
+
+- name: soft nnproc limits for "{{ jboss_user }}"
+  pam_limits:
+    domain: "{{ jboss_user }}"
+    limit_type: soft
+    limit_item: nproc
+    value: "{{ jboss_os_soft_nproc }}"
+
+- name: Temp JBoss dir
+  file:
+    path: "{{ jboss_tmp }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_group }}"
+
+- name: Allow {{jboss_user}} to have passwordless sudo
+  lineinfile: 
+    dest: /etc/sudoers
+    state: present
+    regexp: '^{{ jboss_user }}\s*ALL\=\(root\)\s*NOPASSWD\:\s*\/bin\/systemctl *'
+    line: '{{ jboss_user }}    ALL=(root)       NOPASSWD: /bin/systemctl * {{ jboss_instance_name }} , /bin/systemctl * {{ jboss_instance_name }}.service'
+    validate: 'visudo -cf %s'
+    backup: yes

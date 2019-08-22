@@ -1,0 +1,14 @@
+- name: "OJDBC: Prerequisites Directories"
+  file:
+    state: directory
+    mode: 0755
+    path: "{{ jboss_tmp }}/modules"
+
+- name: "OJDBC: Download OJDBC Driver"
+  get_url:
+    url: "{{ content_url }}/ojdbc{{ jboss_ojdbc_version }}.jar"
+    dest: "{{ jboss_tmp }}/modules/ojdbc{{ jboss_version }}.jar"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_group }}"
+    mode: 0644
+    validate_certs: no

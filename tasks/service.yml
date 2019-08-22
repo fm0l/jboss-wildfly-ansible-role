@@ -1,0 +1,34 @@
+---
+- name: Install jboss init script
+  template:
+    path: "{{ jboss_bin }} _init_script.j2"
+    dest: "/etc/init.d/{{ jboss_instance_name }}"
+    owner: root
+    group: root
+    mode: 0755
+    backup: yes
+
+- name: Install jboss init conf
+  template:
+    path: "{{ jboss_bin }}.conf.j2"
+    dest: "/etc/default/{{ jboss_instance_name }}.conf"
+    owner: root
+    group: root
+    mode: 0755
+    backup: yes
+
+- name: "Install the custom properties file"
+  template:
+    path: "{{ jboss_instance_name }}-custom.properties"
+    dest: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/custom.properties"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_user }}"
+  when:
+    - jboss_custom_prop == True
+
+- name: Enable jboss.service unit
+  service:
+    daemon_reload: yes
+    name: "{{ jboss_instance_name }}"
+    state: restarted
+    enabled: true
