@@ -1,3 +1,4 @@
+# Script management thanks to fcolombo@sorint.it, edited and rewritten for role + variabilization by fmollura@sorint.it
 - name: Start wildfly if not started
   service:
     name: "{{ jboss_instance_name }}"
