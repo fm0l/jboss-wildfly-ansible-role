@@ -19,10 +19,10 @@ jboss_http_port: "{{ jboss_std_http_port + jboss_offset_variable }}" # HTTP port
 
 ## JBoss Custom Properties
 jboss_custom_prop: False
-jboss_custom_prop_file: "-p{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/custom.properties"
+jboss_custom_prop_file: "-P{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/custom.properties"
 
 ## JAVA OPTS
-jboss_eap_java_opts: "-Xms1024m -Xmx1024m -XX:MetaspaceSize=512M -XX:MaxMetaspaceSize=512M -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath={{ jboss_home }}/{{ jboss_folder_name }}/local_dump {{ jboss_custom_prop_file }}"
+jboss_eap_java_opts: "-Xms1024m -Xmx1024m -XX:MetaspaceSize=512M -XX:MaxMetaspaceSize=512M -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath={{ jboss_home }}/{{ jboss_folder_name }}/local_dump"
 
 ## Remote URL for repository (modules, artifacts, installation)
 content_url: "http://127.0.0.1:8081/repository"

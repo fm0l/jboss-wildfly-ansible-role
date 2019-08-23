@@ -1,7 +1,7 @@
-jboss.bind.address={{ hostname }}
-jboss.bind.address.management={{ hostname }}
-jboss.bind.address.private={{ hostname }}
-jboss.bind.address.unsecure={{ hostname }}
+jboss.bind.address={{ ansible_host }}
+jboss.bind.address.management={{ ansible_host }}
+jboss.bind.address.private={{ ansible_host }}
+jboss.bind.address.unsecure={{ ansible_host }}
 jboss.http.port={{ jboss_std_http_port }}
-jboss.host.name={{ hostname }}
-jboss.tx.node.id={{ hostname }}
+jboss.host.name={{ ansible_host }}
+jboss.tx.node.id={{ ansible_host }}

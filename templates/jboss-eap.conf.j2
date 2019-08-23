@@ -35,7 +35,7 @@ JBOSS_CONSOLE_LOG="{{ jboss_home }}/{{ jboss_instance_name }}/console.log"
 
 ## Additionals args to include in startup
 # JBOSS_OPTS="--admin-only -b 127.0.0.1"
-JBOSS_OPTS="-Djboss.socket.binding.port-offset={{ jboss_socket_binding_port_offset }}"
+JBOSS_OPTS="-Djboss.socket.binding.port-offset={{ jboss_socket_binding_port_offset }} {{ jboss_custom_prop_file }}"
 #JAVA_OPTS="-Xms2048m -Xmx2048m -XX:MaxMetaspaceSize=512m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true"
 
 JAVA_OPTS="{{ jboss_eap_java_opts }}"
