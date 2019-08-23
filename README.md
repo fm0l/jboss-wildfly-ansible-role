@@ -4,6 +4,9 @@ This is a role you can use to deploy a customized instance of Wildfly or JBoss E
 
 _This project supports multi-instances thanks to the custom properties (multipleIPs) or socket binding port offset (singleIP, different ports)_
 
+Supported on:
+_JBoss 7 / Wildfly 10-16_
+
 ### Prerequisites:
 
 A Web server or a path where you can put the binaries (Modules and ZIP file for Wildfly or JBoss)
