@@ -1,1 +1,21 @@
 # jboss-wildfly-ansible-role
+
+This is a role you can use to deploy a customized instance of Wildfly or JBoss EAP
+
+### Prerequisites:
+
+A Web server or a path where you can put the binaries (Modules and ZIP file for Wildfly or JBoss)
+The variable for this configuration is *default/main.yml:content_url*
+
+### How-TO:
+
+Read the variables! I will work on documenting this project in the future (i hope...).
+
+### Custom Batch Application:
+
+There is a custom batch CLI application system.
+Basically just follow the template inside files/wildfly_batch and create your application configs that will be automatically configured
+
+### Deploy Applications:
+
+My suggestion is to use the managed deploy with the CLI batches so you dont have to think about adding a play/role for deploy (with the module or the deployment scanner)
