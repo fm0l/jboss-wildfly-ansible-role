@@ -12,8 +12,8 @@
   template:
     path: "{{ jboss_bin }}.conf.j2"
     dest: "/etc/default/{{ jboss_instance_name }}.conf"
-    owner: root
-    group: root
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_user }}"
     mode: 0755
     backup: yes
 
@@ -23,8 +23,6 @@
     dest: "{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/custom.properties"
     owner: "{{ jboss_user }}"
     group: "{{ jboss_user }}"
-  when:
-    - jboss_custom_prop == True
 
 - name: Enable jboss.service unit
   service:
