@@ -18,7 +18,6 @@ jboss_std_http_port: 8080 # Standard HTTP port you want to expose your services
 jboss_http_port: "{{ jboss_std_http_port + jboss_offset_variable }}" # HTTP port with offset applied
 
 ## JBoss Custom Properties
-jboss_custom_prop: False
 jboss_custom_prop_file: "-P{{ jboss_home }}/{{ jboss_instance_name }}/standalone/configuration/custom.properties"
 
 ## JAVA OPTS
