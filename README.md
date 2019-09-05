@@ -24,3 +24,11 @@ Basically just follow the template inside files/wildfly_batch and create your ap
 ### Deploy Applications:
 
 My suggestion is to use the managed deploy with the CLI batches so you dont have to think about adding a play/role for deploy (with the module or the deployment scanner)
+
+### ToDO:
+
+- Remove the checksum copy mechanism
+
+- Set an handler for instance restart
+
+- Make a better user/password management system with add-user.sh and ansible-vault
